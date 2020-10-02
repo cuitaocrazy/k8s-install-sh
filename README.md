@@ -14,7 +14,9 @@ helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard
 
 阿里云资料库没有一些新的镜像，需要手动load
 
-node: 注意dns解析ip，避免dns污染
+node: 注意dns解析ip，避免dns污染 [阿里云disable network自动配置](https://help.aliyun.com/document_detail/57803.html), 目前配置的dns时候`114.114.114.114`和`8.8.8.8`
+
+目前发现的两个域名存在污染：\*.githubusercontent.com，\*.letsencrypt.org
 
 ## kubeadm-init.sh
 
