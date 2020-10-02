@@ -1,5 +1,21 @@
 # k8s-install-sh
 
+## 前提
+
+docker kubectl kubeselect kubeadm helm
+
+```bash
+helm repo add jetstack https://charts.jetstack.io
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard
+```
+
+[阿里云的安装参照](https://developer.aliyun.com/article/763983)
+
+阿里云资料库没有一些新的镜像，需要手动load
+
+node: 注意dns解析ip，避免dns污染
+
 ## kubeadm-init.sh
 
 执行初始化
