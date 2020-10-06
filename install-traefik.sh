@@ -15,7 +15,7 @@
 #         "--certificatesresolvers.le.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory" \
 #     ] \
 #  写不下去了。。。
-cat <<EOF | helm template traefik traefik/traefik -n traefik --create-namespace --values -
+cat <<EOF | helm install traefik traefik/traefik -n traefik --create-namespace --values -
 additionalArguments:
   - --certificatesresolvers.le.acme.email=ctllfh@gmail.com
   - --certificatesresolvers.le.acme.storage=/data/acme.json
