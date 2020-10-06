@@ -16,7 +16,7 @@ helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard
 
 node: 注意dns解析ip，避免dns污染 [阿里云disable network自动配置](https://help.aliyun.com/document_detail/57803.html), 目前配置的dns时候`114.114.114.114`和`8.8.8.8`
 
-目前发现的两个域名存在污染：\*.githubusercontent.com，\*.letsencrypt.org
+目前发现的一个域名存在污染：\*.githubusercontent.com
 
 ## kubeadm-init.sh
 
@@ -213,4 +213,77 @@ EOF
 
 ```bash
 kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+```
+
+## install keycloak
+
+没有用helm安装
+
+测试可用一下部署
+
+```yaml
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: keycloak-deployment
+spec:
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        image: quay.io/keycloak/keycloak:11.0.2
+        env:
+        - name: KEYCLOAK_USER
+          value: "admin"
+        - name: KEYCLOAK_PASSWORD
+          value: "admin"
+        - name: PROXY_ADDRESS_FORWARDING
+          value: "true"
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: https
+          containerPort: 8443
+        readinessProbe:
+          httpGet:
+            path: /auth/realms/master
+            port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: keycloak
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: keycloak-websecre
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`keycloak.yadadev.com`)
+    services:
+    - name: keycloak
+      port: 8080
+  tls:
+    certResolver: le
+    domains:
+    - main: yadadev.com
+      sans:
+      - '*.yadadev.com'
 ```
