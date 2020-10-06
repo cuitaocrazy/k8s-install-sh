@@ -10,3 +10,4 @@ helm install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard \
     -n kubernetes-dashboard \
     --create-namespace
     --set protocolHttp=true
+    --set service.externalPort=80
