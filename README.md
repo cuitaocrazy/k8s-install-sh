@@ -38,6 +38,12 @@ node: root用户可在执行前把`export KUBECONFIG=/etc/kubernetes/admin.conf`
 
 e.g: ./install-traefik.sh FeAXXXXXXXXXXXXXXXXXXXXXX69bu
 
+备注：
+
+>  卸载traefik时会不会删除涉及他的资源（IngressRoute，Middleware），估计是为了好升级
+>
+> pvc没有用longhorn的持久卷管理，longhorn不会用，不知道如何浏览、添加删除文件，不想丢掉已经创建好的acme.json（不然每次都要请求证书，letsencypt有每周5次主域限制）。
+
 ### 前置工作
 
 创建本地pv：
@@ -174,6 +180,67 @@ spec:
 
 安装证书管理
 
+# install-longhorn.sh
+
+安装volume管理器
+
+必须安装open-iscsi，[说明](https://longhorn.io/docs/0.8.0/install/requirements/)
+
+```bash
+# centos
+yum install iscsi-initiator-utils
+```
+
+Dashboard的IngressRoute:
+
+```yaml
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: longhorn-websecre
+  namespace: longhorn-system
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    middlewares:
+    - name: longhorn-basic-auth
+    match: Host(`longhorn.yadadev.com`)
+    services:
+    - name: longhorn-frontend
+      port: 80
+  tls:
+    certResolver: le
+    domains:
+    - main: yadadev.com
+      sans:
+      - '*.yadadev.com'
+```
+
+为Dashboard加一个简单用户验证，[说明](https://doc.traefik.io/traefik/middlewares/basicauth/)：
+
+```yaml
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: longhorn-basic-auth
+  namespace: longhorn-system
+spec:
+  basicAuth:
+    secret: longhorn-basic-secret
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: longhorn-basic-secret
+  namespace: longhorn-system
+data:
+  users: bG9uZ2hvcm46JGFwcjEkc0FxcVV3Y3EkamFkY3VMMHJsd29NVFVmdG1UdHh1MQo=
+```
+
+备注：由于测试的服务器只有一个节点，还是master节点，因此脚本里的参数都改成1，longhorn默认的环境是3节点，参数也都是3，如果不改为1回出现各种错误，其中一个错误是：多个pod抢占一个块设备，导致成功分配pvc，但是挂载可能成功或不成功，但是最终成功，因为他会一直重试，正好碰到拿到锁的pod就会成功。
+
 # 基础应用
 
 ## install-dashboard.sh
@@ -214,6 +281,20 @@ EOF
 ```bash
 kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
 ```
+
+## install-efk.sh
+
+添加IngressRoute参照上longhorn Dashboard
+
+添加一个简单的用户认证参照longhorn Dashboard
+
+elasticsearch的pvc创建依赖于longhorn，如果手动加入pv或不使用持久自己设置values的参数
+
+## install-prometheus-grafana.sh
+
+添加IngressRoute参照上longhorn Dashboard
+
+grafana登陆账户密码在secret：prometheus-grafana里
 
 ## install keycloak
 
@@ -287,3 +368,4 @@ spec:
       sans:
       - '*.yadadev.com'
 ```
+

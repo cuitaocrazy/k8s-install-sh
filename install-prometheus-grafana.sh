@@ -1,0 +1,1 @@
+helm install prometheus-grafana center/prometheus-community/kube-prometheus-stack -n monitor --create-namespace
