@@ -284,9 +284,49 @@ kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboar
 
 ## install-efk.sh
 
-添加IngressRoute参照上longhorn Dashboard
+添加IngressRoute和简单验证
 
-添加一个简单的用户认证参照longhorn Dashboard
+```yaml
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: kibana-basic-auth
+  namespace: logs
+spec:
+  basicAuth:
+    secret: kibana-basic-secret
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kibana-basic-secret
+  namespace: logs
+data:
+  users: a2liYW5hOiRhcHIxJEh5alQyZEh1JERRRUxpODVxbzJZNHFuLllaSnM4WC8K
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kibana-websecre
+  namespace: logs
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    middlewares:
+    - name: kibana-basic-auth
+    match: Host(`kibana.yadadev.com`)
+    services:
+    - name: kibana-kibana
+      port: 5601
+  tls:
+    certResolver: le
+    domains:
+    - main: yadadev.com
+      sans:
+      - '*.yadadev.com'
+```
 
 elasticsearch的pvc创建依赖于longhorn，如果手动加入pv或不使用持久自己设置values的参数
 
