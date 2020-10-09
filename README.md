@@ -409,3 +409,85 @@ spec:
       - '*.yadadev.com'
 ```
 
+## install-dbs.sh
+
+postgresql数据库
+
+Username：**postgres**
+
+Password: **AHwODIcGL3**
+
+
+
+pgAdmin
+
+Username: **chart@example.local**
+
+Password: **问我...**
+
+
+
+```yaml
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pgadmin-websecre
+  namespace: dbs
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`pgadmin.yadadev.com`)
+    services:
+    - name: pgadmin-pgadmin4
+      port: 80
+  tls:
+    certResolver: le
+    domains:
+    - main: yadadev.com
+      sans:
+      - '*.yadadev.com'
+```
+
+Mysql
+
+Username: root
+
+Password: **8WCsUJBlbO**
+
+```yaml
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: phpmyadmin-websecre
+  namespace: dbs
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`phpmyadmin.yadadev.com`)
+    services:
+    - name: phpmyadmin
+      port: 80
+  tls:
+    certResolver: le
+    domains:
+    - main: yadadev.com
+      sans:
+      - '*.yadadev.com'
+```
+
+Mongoldb
+
+authenticationDatabase: **admin**
+
+Password: **zfG2iigfJ6**
+
+```yaml
+# 等待添加mongo express
+```
+
+
+
