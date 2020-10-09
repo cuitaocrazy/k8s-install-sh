@@ -6,4 +6,8 @@ helm install elasticsearch center/elastic/elasticsearch \
 
 helm install fluent center/fluent/fluent-bit -n logs
 
-helm install kibana center/elastic/kibana -n logs
+cat <<EOF | helm install kibana center/elastic/kibana -n logs --values -
+kibanaConfig:
+  kibana.yml: |
+    i18n.locale: "zh-CN"
+EOF
