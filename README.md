@@ -489,5 +489,20 @@ Password: **zfG2iigfJ6**
 # 等待添加mongo express
 ```
 
+# 临时记录
 
+crictl info
+
+/etc/rancher/k3s/registries.yaml
+```yaml
+mirrors:
+  docker.io:
+    endpoint:
+      - "https://kfwkfulq.mirror.aliyuncs.com"[root@iZwmyxy5xp8w84Z k3s]
+```
+
+```bash
+helm install rancher rancher-stable/rancher -n cattle-system \
+  --set tls=external,replicas=1,hostname=rancher.yadadev.com
+```
 
