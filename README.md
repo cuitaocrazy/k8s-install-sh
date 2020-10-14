@@ -57,13 +57,13 @@ chmod 777 /mnt/data
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: task-pv-volume
+  name: yada-acme
   labels:
     type: local
 spec:
   storageClassName: manual
   capacity:
-    storage: 10Gi
+    storage: 200Mi
   accessModes:
     - ReadWriteOnce
   hostPath:
@@ -487,6 +487,23 @@ Password: **zfG2iigfJ6**
 
 ```yaml
 # 等待添加mongo express
+```
+
+
+
+# k3s
+
+
+
+```zsh
+curl -sfL http://rancher-mirror.cnrancher.com/k3s/k3s-install.sh | INSTALL_K3S_MIRROR=cn INSTALL_K3S_SKIP_START=true sh -
+curl -sfL http://rancher-mirror.cnrancher.com/k3s/v1.18.9-k3s1/k3s-airgap-images-amd64.tar -O
+mkdir -p /var/lib/rancher/k3s/agent/images/
+cp ./k3s-airgap-images-amd64.tar /var/lib/rancher/k3s/agent/images/
+systemctl start k3s
+# 为helm准备
+echo export KUBECONFIG=/etc/rancher/k3s/k3s.yaml >> ~/.bashrc
+
 ```
 
 # 临时记录
