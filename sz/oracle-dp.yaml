@@ -1,0 +1,58 @@
+# headless服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: oracle11g
+  namespace: dbs
+  labels:
+    app: oracle-ee-11g
+spec:
+  ports:
+  - name: oracle
+    port: 1521
+  - name: em
+    port: 1158
+  clusterIP: None
+  selector:
+    app: oracle-ee-11g
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: oracle-ee-11g
+  namespace: dbs
+spec:
+  selector:
+    matchLabels:
+      app: oracle-ee-11g # has to match .spec.template.metadata.labels
+  serviceName: "oracle11g" # namespace内的限定subdomain，必须制定，可和headless service的名称一样，但service是在dns注册名字，而这个只是作为主机的限定命，详细可查看Pods的subdomain部分
+  replicas: 1 # by default is 1
+  template:
+    metadata:
+      labels:
+        app: oracle-ee-11g # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: oracle
+        image: loliconneko/oracle-ee-11g
+        ports:
+        - containerPort: 1158
+          name: em
+        - containerPort: 1521
+          name: oracle
+        env:
+            # 不启动WEB_CONSOLE，标记为true也无效，要启动EM需要手动在oracle里自己重新建立资料库
+            - name: WEB_CONSOLE
+              value: "false"
+        volumeMounts:
+        - name: oracle-data
+          mountPath: /u01/app/oracle
+  volumeClaimTemplates:
+  - metadata:
+      name: oracle-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 8Gi

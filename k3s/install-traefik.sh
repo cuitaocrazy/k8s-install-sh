@@ -7,7 +7,7 @@ env:
   - name: ALICLOUD_ACCESS_KEY
     value: LTAI4Fojyd71AnBNBrGrpNsz
   - name: ALICLOUD_SECRET_KEY
-    value: FeA4F2SbnhNpWW2BOYrxt4pGzs69bu
+    value: $1
   - name: ALICLOUD_REGION_ID
     value: cn-beijing
 persistence:
