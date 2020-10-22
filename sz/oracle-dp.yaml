@@ -10,8 +10,6 @@ spec:
   ports:
   - name: oracle
     port: 1521
-  - name: em
-    port: 1158
   clusterIP: None
   selector:
     app: oracle-ee-11g
@@ -35,19 +33,13 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: oracle
-        image: loliconneko/oracle-ee-11g
+        image: wnameless/oracle-xe-11g-r2:latest
         ports:
-        - containerPort: 1158
-          name: em
         - containerPort: 1521
           name: oracle
-        env:
-            # 不启动WEB_CONSOLE，标记为true也无效，要启动EM需要手动在oracle里自己重新建立资料库
-            - name: WEB_CONSOLE
-              value: "false"
         volumeMounts:
         - name: oracle-data
-          mountPath: /u01/app/oracle
+          mountPath: /mnt/fs/
   volumeClaimTemplates:
   - metadata:
       name: oracle-data
@@ -55,4 +47,4 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 8Gi
+          storage: 5Gi

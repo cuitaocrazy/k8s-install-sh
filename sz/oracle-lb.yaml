@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: oracle-11g-em
+  name: oracle-11g-bl
   namespace: dbs
 spec:
   selector:
     app: oracle-ee-11g
   ports:
     - protocol: TCP
-      port: 1158
-      targetPort: 1158
+      port: 1521
+      targetPort: 1521
   type: LoadBalancer
