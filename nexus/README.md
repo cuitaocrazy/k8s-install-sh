@@ -32,7 +32,7 @@ openssl req -x509 -newkey rsa -nodes -subj /CN=nexus \
 把server.crt添加的系统环境里：
 
 - mac：钥匙链添加用户里即可（双击证书），注意添加后，证书->显示简介->信任->始终信任
-- Ubantu：把证书拷贝到`/usr/share/ca-certificates/extra/`，没有文件夹就建一个，执行`update-ca-certificates`
+- Ubuntu：把证书拷贝到`/usr/local/share/ca-certificates/`，没有文件夹就建一个，执行`update-ca-certificates`
 - CentOS：把证书拷贝到`/etc/pki/ca-trust/source/anchors/`，执行`update-ca-trust`
 
 到此，我们就认为证书和域名都有了，下一步开始部署反向代理环境。
